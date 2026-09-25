@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>UNFOLD — Guided Mathematics</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<header class="topbar">
+  <div class="brand">
+    <h1>UNFOLD</h1>
+    <span class="tagline">GUIDED MATHEMATICS</span>
+  </div>
+  <div class="quote">"LEARN THE METHOD. THEN THE ANSWER."</div>
+</header>
+
+<main class="layout">
+
+  <section class="panel problem-panel">
+    <h2>SOLVE WITHOUT SPOILERS</h2>
+    <p class="sub">Enter a problem. Reveal the solution only when you're ready.</p>
+    <hr>
+
+    <label class="field-label">YOUR PROBLEM</label>
+    <textarea id="problemInput" placeholder="e.g. ∫x³+1 dx"></textarea>
+
+    <div class="keypad" id="keypad">
+      <!-- symbol buttons injected by script.js -->
+    </div>
+
+    <button id="analyzeBtn" class="primary-btn">ANALYZE PROBLEM</button>
+    <div id="statusMsg" class="status-msg"></div>
+  </section>
+
+  <section class="panel guidance-panel">
+    <h2>GUIDANCE</h2>
+    <hr>
+
+    <div class="steps">
+      <div class="step" data-step="1">
+        <div class="step-header">
+          <span class="step-num">01</span>
+          <span class="step-title">TOPIC &amp; METHOD</span>
+        </div>
+        <div class="step-body" id="step1Body"></div>
+        <button class="reveal-btn" data-target="1">REVEAL</button>
+      </div>
+
+      <div class="step locked" data-step="2">
+        <div class="step-header">
+          <span class="step-num">02</span>
+          <span class="step-title">FORMULAS &amp; SIMPLIFICATION</span>
+        </div>
+        <div class="step-body" id="step2Body"></div>
+        <button class="reveal-btn" data-target="2" disabled>REVEAL</button>
+      </div>
+
+      <div class="step locked" data-step="3">
+        <div class="step-header">
+          <span class="step-num">03</span>
+          <span class="step-title">COMPLETE SOLUTION</span>
+        </div>
+        <div class="step-body" id="step3Body"></div>
+        <button class="reveal-btn" data-target="3" disabled>REVEAL</button>
+      </div>
+    </div>
+
+    <div id="placeholderMsg" class="placeholder-msg">
+      THE MATHEMATICIAN APPEARS AFTER ANALYSIS
+    </div>
+  </section>
+
+</main>
+
+<script src="config.js"></script>
+<script src="script.js"></script>
+</body>
+</html>
