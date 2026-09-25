@@ -45,8 +45,8 @@ analyzeBtn.addEventListener("click", async () => {
     setStatus("Enter a problem first.", "error");
     return;
   }
-  if (!OPENAI_API_KEY || OPENAI_API_KEY === "YOUR_API_KEY_HERE") {
-    setStatus("Add your OpenAI API key in config.js first.", "error");
+  if (!GEMINI_API_KEY || GEMINI_API_KEY === "YOUR_GEMINI_KEY_HERE") {
+    setStatus("Add your Gemini API key in config.js first.", "error");
     return;
   }
 
@@ -68,28 +68,30 @@ analyzeBtn.addEventListener("click", async () => {
 });
 
 async function fetchSolution(problem) {
-  const systemPrompt = `You are a mathematics tutor. Given a math problem, respond ONLY with a JSON object
-(no markdown fences, no extra text) with exactly these three keys:
+  const systemPrompt = `You are a mathematics tutor. Given a math problem, respond ONLY with a raw JSON object
+(no markdown fences, no backticks, no extra text before or after) with exactly these three keys:
 
 "topic_method": a short paragraph naming the topic/branch of math and the general method or theorem to use — no formulas, no numbers from the actual solution.
 "formulas_simplification": the relevant formulas/rules needed, and how the problem simplifies/sets up using them — still without giving the final numeric/symbolic answer.
 "complete_solution": the full step-by-step worked solution ending in the final answer.
 
-Use plain text math notation (e.g. x^3, sqrt(x), integral of ...). Keep each section concise but complete.`;
+Use plain text math notation (e.g. x^3, sqrt(x), integral of ...). Keep each section concise but complete.
 
-  const response = await fetch("https://api.openai.com/v1/chat/completions", {
+Problem: ${problem}`;
+
+  const url = `https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_MODEL}:generateContent?key=${GEMINI_API_KEY}`;
+
+  const response = await fetch(url, {
     method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      "Authorization": "Bearer " + OPENAI_API_KEY
-    },
+    headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
-      model: OPENAI_MODEL,
-      messages: [
-        { role: "system", content: systemPrompt },
-        { role: "user", content: "Problem: " + problem }
+      contents: [
+        { role: "user", parts: [{ text: systemPrompt }] }
       ],
-      temperature: 0.3
+      generationConfig: {
+        temperature: 0.3,
+        responseMimeType: "application/json"
+      }
     })
   });
 
@@ -99,12 +101,21 @@ Use plain text math notation (e.g. x^3, sqrt(x), integral of ...). Keep each sec
   }
 
   const data = await response.json();
-  let raw = data.choices[0].message.content.trim();
 
-  // Strip accidental markdown fences
-  raw = raw.replace(/^```json/i, "").replace(/^```/, "").replace(/```$/, "").trim();
+  const raw = data.candidates?.[0]?.content?.parts?.[0]?.text;
+  if (!raw) {
+    throw new Error("No content returned by Gemini. Try again.");
+  }
 
-  return JSON.parse(raw);
+  const cleaned = raw.replace(/^```json/i, "").replace(/^```/, "").replace(/```$/, "").trim();
+
+  let parsed;
+  try {
+    parsed = JSON.parse(cleaned);
+  } catch (e) {
+    throw new Error("Model returned invalid JSON. Try again.");
+  }
+  return parsed;
 }
 
 function unlockStep(n) {
