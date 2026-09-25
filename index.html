@@ -24,11 +24,9 @@
     <hr>
 
     <label class="field-label">YOUR PROBLEM</label>
-    <textarea id="problemInput" placeholder="e.g. ∫x³+1 dx"></textarea>
+    <textarea id="problemInput" placeholder="e.g. x^3+1 or lim(x->2) x^2+3"></textarea>
 
-    <div class="keypad" id="keypad">
-      <!-- symbol buttons injected by script.js -->
-    </div>
+    <div class="keypad" id="keypad"></div>
 
     <button id="analyzeBtn" class="primary-btn">ANALYZE PROBLEM</button>
     <div id="statusMsg" class="status-msg"></div>
@@ -74,7 +72,7 @@
 
 </main>
 
-<script src="config.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/12.4.2/math.js"></script>
 <script src="script.js"></script>
 </body>
 </html>
